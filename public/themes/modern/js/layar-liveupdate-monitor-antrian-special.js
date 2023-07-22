@@ -161,10 +161,10 @@ const data_layar_antrian = [];
 			console.log(data);
 			if (data) {
 				console.log(data.awalan + data.jml_dipanggil);
-				$('.current-antrian-number').find('.number-one').html(data.awalan + data.jml_dipanggil.padStart(4, '0'));
+				$('.current-antrian-number').find('.number-one').html(data.awalan + data.jml_dipanggil);
 				$('.current-antrian-tujuan').html(data.nama_antrian_tujuan);
 				$('#list-awalan-' + data.id_antrian_tujuan).html(data.awalan);
-				$('#list-antrian-detail-nomor-' + data.id_antrian_tujuan).html(data.jml_dipanggil.padStart(4, '0'));
+				$('#list-antrian-detail-nomor-' + data.id_antrian_tujuan).html(data.jml_dipanggil);
 			}
 			data_layar_antrian.splice(0, 1);
 		}

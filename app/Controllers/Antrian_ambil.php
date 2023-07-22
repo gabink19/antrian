@@ -9,6 +9,7 @@
 namespace App\Controllers;
 use App\Models\AntrianAmbilModel;
 use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
+use Mike42\Escpos\PrintConnectors\NetworkPrintConnector;
 use Mike42\Escpos\Printer;
 
 require APPPATH . 'ThirdParty/Escpos/vendor/autoload.php';
@@ -163,7 +164,7 @@ class Antrian_ambil extends \App\Controllers\BaseController
 		exit;
 	}
 	
-	private function cetakAntrian($antrian) {
+	private function cetakAntrian($antrian,$print_method="network") {
 		
 		try {
 			
@@ -171,7 +172,11 @@ class Antrian_ambil extends \App\Controllers\BaseController
 			$printer_aktif = $this->model->getAktifPrinter();
 			if ($printer_aktif) {
 				foreach ($printer_aktif as $val) {
-					$connector = new WindowsPrintConnector($val['alamat_server']);
+					if ($print_method=="network") {
+						$connector = new NetworkPrintConnector($val['alamat_server'], 9100, 5);
+					} else if ($print_method=="windows"){
+						$connector = new WindowsPrintConnector($val['alamat_server']);
+					}
 					$printer = new Printer($connector);
 					
 					$printer -> setJustification(Printer::JUSTIFY_CENTER);

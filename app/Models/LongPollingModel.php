@@ -159,8 +159,9 @@ class LongPollingModel extends \App\Models\BaseModel
 	}
 	
 	public function getAntrianAmbilByTime() {
-		$sql = 'SELECT id_antrian_kategori, jml_antrian 
-				FROM antrian_panggil 
+		$sql = 'SELECT ap.id_antrian_kategori, jml_antrian , awalan
+				FROM antrian_panggil as ap
+				LEFT JOIN antrian_kategori  USING (id_antrian_kategori)
 				WHERE tanggal = ?';
 		$result = $this->db->query($sql, [date('Y-m-d')])->getResultArray();
 		return $result;

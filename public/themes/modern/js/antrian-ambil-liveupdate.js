@@ -19,12 +19,11 @@ $(document).ready(function() {
 			dataType : 'JSON',
 			success : function(data) 
 			{
-				console.log(data);
 				if (data.status == 'ok'){
 					for (k in data.data) {
 						var antrian = data.data[k].jml_antrian
 						$('tr[data-id-antrian-kategori="' + k + '"]').find('td').eq(3).html(antrian);
-						$('#no_antrian_' + k).text(antrian.toString().padStart(4, '0'));
+						$('#no_antrian_' + k).text(data.data[k].awalan+antrian);
 					}
 				}
 			}, error : function (xhr) {

@@ -127,7 +127,7 @@ echo '</script>';
 						$current_tujuan = '---';
 						$current_antrian = '---';
 						if ($antrian_terakhir) {
-							$current_antrian = $antrian_terakhir['awalan_panggil'] . sprintf("%04d",$antrian_terakhir['nomor_panggil']);
+							$current_antrian = $antrian_terakhir['awalan_panggil'] . $antrian_terakhir['nomor_panggil'];
 							$current_tujuan = $antrian_terakhir['nama_antrian_tujuan'];
 						}
 						echo $current_antrian;
@@ -232,7 +232,7 @@ echo '</script>';
 								<div class="box-antrian-header" ' . $background_header . '>' . $val['nama_antrian_tujuan'] . '</div>
 								<div class="box-antrian-body" ' . $background_body . '>
 									<div class="group-nomor" style="font-size: 55px;">
-										<span id="list-awalan-' . $val['id_antrian_tujuan'] . '" class="antrian-awalan">' . $awalan . '</span><span class="nomor-antrian-dipanggil" id="list-antrian-detail-nomor-' . $val['id_antrian_tujuan'] . '">' . sprintf("%04d", $jml_dipanggil) . '</span>
+										<span id="list-awalan-' . $val['id_antrian_tujuan'] . '" class="antrian-awalan">' . $awalan . '</span><span class="nomor-antrian-dipanggil" id="list-antrian-detail-nomor-' . $val['id_antrian_tujuan'] . '">' . $jml_dipanggil . '</span>
 									</div>
 								</div>
 							</div>';
@@ -264,19 +264,6 @@ echo '</script>';
 	<span style="display:none" id="link-video"><?=$setting['link_video']?></span>
 	<span style="display:none" id="awalan-panggil"><?=json_encode($awalan_panggil['nama_file'])?></span>
 	<script type="text/javascript">
-		$(document).ready(function() {
-			Swal.fire('Layar Monitor Siap')
-			addEventListener("click", function() {
-				var
-					el = document.documentElement
-					, rfs =
-						el.requestFullScreen
-						|| el.webkitRequestFullScreen
-						|| el.mozRequestFullScreen
-				;
-				rfs.call(el);
-			});
-		})
 	</script>
 </body>
 </html>
