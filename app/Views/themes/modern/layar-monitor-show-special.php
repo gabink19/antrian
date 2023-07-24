@@ -263,6 +263,8 @@ echo '</script>';
 	<span style="display:none" id="id-setting-layar"><?=$_GET['id']?></span>
 	<span style="display:none" id="link-video"><?=$setting['link_video']?></span>
 	<span style="display:none" id="awalan-panggil"><?=json_encode($awalan_panggil['nama_file'])?></span>
+	<span style="display:none" id="huruf_awal_layar"><?=$huruf_awal_layar['id_antrian_kategori']?></span>
+	<span style="display:none" id="audio_onoff"><?=(isset($_GET['audio']))?$_GET['audio']:'on'?></span>
 	<script type="text/javascript">
 		$(document).ready(function() {
             $('[data-plyr="play"]').click();

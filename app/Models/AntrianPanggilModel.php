@@ -320,7 +320,6 @@ class AntrianPanggilModel extends \App\Models\BaseModel
 					WHERE id_antrian_kategori = ? AND tanggal = ? LIMIT 1';
 			$data = $this->db->query($sql, [$kategori, date('Y-m-d')])->getRowArray();
 			$max_antrian = 0 + $data['sisa_antrian'];
-			echo '<pre>'; print_r($max_antrian); echo '</pre>'; die();
 			if($nomor_antrian > $max_antrian){
 				return false;
 			}

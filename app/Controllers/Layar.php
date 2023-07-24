@@ -110,11 +110,11 @@ class Layar extends \App\Controllers\BaseController
 			$this->data['antrian_detail'] = $antrian_detail;
 			$this->data['antrian_terakhir'] = $this->model->getAntrianDipanggilTerakhir($id);
 			$this->data['awalan_panggil'] = $this->model->getAwalanPanggil();
+			$this->data['huruf_awal_layar'] = $this->model->getHurufAwalLayar($id);
 			
 			// Urut
 			$query = $this->model->getAntrianDipanggilByTujuan($id);
 			$urut = [];
-			// echo '<pre>'; print_r($query); die;
 			foreach ($query as $val) {
 				$urut[$val['id_antrian_detail']] = $val;
 			}

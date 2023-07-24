@@ -194,7 +194,7 @@ class Antrian_ambil extends \App\Controllers\BaseController
 					$printer -> text(format_tanggal(date('Y-m-d')) . "\n");
 					$printer -> text(date('H:i:s'));
 					$printer -> feed(2);
-					// $printer -> cut();
+					$printer -> cut();
 					
 					/* Close printer */
 					$printer -> close();

@@ -123,41 +123,11 @@ class LayarModel extends \App\Models\BaseModel
 				WHERE id_setting_layar = ? AND tanggal = ? AND antrian_kategori.aktif = "Y" AND antrian_detail.aktif = "Y"
 				ORDER BY waktu_panggil DESC LIMIT 1';
 		
-		/* $sql = 'SELECT *, antrian_detail.aktif AS tujuan_aktif 
-				FROM antrian_panggil_detail
-				LEFT JOIN antrian_panggil USING(id_antrian_panggil)
-				LEFT JOIN antrian_detail USING(id_antrian_detail)
-				LEFT JOIN antrian_tujuan USING(id_antrian_tujuan)
-				LEFT JOIN antrian_kategori ON antrian_detail.id_antrian_kategori = antrian_kategori.id_antrian_kategori
-				LEFT JOIN setting_layar_detail ON antrian_panggil.id_antrian_kategori AND setting_layar_detail.id_antrian_kategori
-				WHERE id_setting_layar = ? AND tanggal = ? AND antrian_kategori.aktif = "Y" AND antrian_detail.aktif = "Y"
-				ORDER BY waktu_panggil DESC LIMIT 1'; */
-		
 		$result = $this->db->query($sql, [$id, date('Y-m-d')])->getRowArray();
-		/* $result['kategori']['antrian_terakhir'] = $antrian_terakhir;
-			
-			
-		$sql = 'SELECT *, COUNT(*) AS count_dipanggil, MAX(waktu_panggil) AS waktu_panggil FROM antrian_panggil_detail 
-				LEFT JOIN antrian_panggil USING(id_antrian_panggil)
-				LEFT JOIN setting_layar_detail USING(id_antrian_kategori)
-				WHERE tanggal = "' . date('Y-m-d') . '" AND id_setting_layar = ?
-				GROUP BY antrian_panggil_detail.id_antrian_detail
-				ORDER BY waktu_panggil DESC';
-				
-		$result = $this->db->query($sql, (int) $id)->getResultArray(); */
 		return $result;
 	}
 	
 	public function getAntrianDipanggilByTujuan($id) {
-		/* $sql = 'SELECT *
-				FROM antrian_panggil_detail
-				LEFT JOIN antrian_detail USING(id_antrian_detail)
-				LEFT JOIN setting_layar_detail USING(id_antrian_kategori)
-				LEFT JOIN antrian_kategori USING(id_antrian_kategori)
-				LEFT JOIN antrian_tujuan USING(id_antrian_tujuan)
-				LEFT JOIN antrian_panggil USING(id_antrian_panggil)
-				WHERE tgl_panggil = "' . date('Y-m-d') . '" AND id_setting_layar = ? ORDER BY waktu_panggil DESC LIMIT 1 '; */
-		
 		$sql = 'SELECT *, COUNT(*) AS count_dipanggil, MAX(waktu_panggil) AS waktu_panggil, MAX(nomor_panggil) AS nomor_panggil_terakhir 
 				FROM antrian_panggil_detail 
 				LEFT JOIN antrian_panggil USING(id_antrian_panggil)
@@ -167,6 +137,12 @@ class LayarModel extends \App\Models\BaseModel
 				ORDER BY waktu_panggil DESC';
 				
 		$result = $this->db->query($sql, (int) $id)->getResultArray();
+		return $result;
+	}
+
+	public function getHurufAwalLayar($id){
+		$sql = 'SELECT GROUP_CONCAT(id_antrian_kategori) as id_antrian_kategori FROM setting_layar_detail WHERE id_setting_layar = ?';
+		$result = $this->db->query($sql, (int) $id)->getRowArray();
 		return $result;
 	}
 }

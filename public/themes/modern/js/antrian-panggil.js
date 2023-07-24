@@ -18,7 +18,7 @@ $(document).ready(function(){
 		$this.attr('disabled', 'disabled');
 		$this.addClass('disabled');
 		$this.prop('disabled', true);
-		
+		id_antrian_kategori = $('#id-antrian-kategori').text()
 		$.ajax({
 			url : base_url + 'antrian-panggil/ajax-panggil-antrian',
 			type : 'post',
@@ -55,7 +55,7 @@ $(document).ready(function(){
 					suara.pause();
 				}
 				
-				socket.send('panggil');
+				socket.send('panggil_'+id_antrian_kategori);
 				
 			}, error: function(xhr) {
 				console.log(xhr);
@@ -86,6 +86,7 @@ $(document).ready(function(){
 		$this.attr('disabled', 'disabled');
 		$this.addClass('disabled');
 		$this.prop('disabled', true);
+		id_antrian_kategori = $('#id-antrian-kategori').text()
 
 		$.ajax({
 			url : base_url + 'antrian-panggil/ajax-panggil-ulang-antrian',
@@ -102,7 +103,7 @@ $(document).ready(function(){
 				if (suara != '') {
 					suara.pause();
 				}
-				socket.send('panggilulang');
+				socket.send('panggilulang_'+id_antrian_kategori);
 			}, error: function(xhr) {
 				$this.prop('disabled', false);
 				$this.removeAttr('disabled');

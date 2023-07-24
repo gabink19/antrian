@@ -39,7 +39,6 @@ input[type=number] {
 				<th>Awalan</th>
 				<th>Jml. Dipanggil</th>
 				<th>Sisa</th>
-				<th>No. Terakhir</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -49,7 +48,6 @@ input[type=number] {
 				<td><?=$kategori['awalan']?></td>
 				<td id="total-antrian-dipanggil"><?=$dipanggil?></td>
 				<td id="total-sisa-antrian"><?=$sisa?></td>
-				<td id="nomor-terakhir"><?=(isset($kategori['nomor_panggil']))?$kategori['nomor_panggil']:0;?></td>
 		</tbody>
 		</table>
 		<div class="mb-3">Tujuan</div>

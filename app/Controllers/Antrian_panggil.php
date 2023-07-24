@@ -289,7 +289,7 @@ class Antrian_panggil extends \App\Controllers\BaseController
 	
 			if ($save) {
 				$message['status'] = 'ok';
-				$message['ws'] = 'panggilulang';
+				$message['ws'] = 'panggilulang_'.$kategori;
 				$message['message'] = 'Data berhasil disimpan';
 			} else {
 				$message['status'] = 'error';
@@ -301,7 +301,7 @@ class Antrian_panggil extends \App\Controllers\BaseController
 			$panggil = $this->model->panggilAntrian($kategori, $id, $nomor_antrian);
 			if ($panggil) {
 				$message['status'] = 'ok';
-				$message['ws'] = 'panggil';
+				$message['ws'] = 'panggil_'.$kategori;
 				$message['message'] = $panggil;
 			} else {
 				$message['status'] = 'error';

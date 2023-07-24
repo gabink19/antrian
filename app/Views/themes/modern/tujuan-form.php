@@ -56,7 +56,7 @@
 			<div class="row mb-3">
 					<label class="col-sm-3 col-md-2 col-lg-3 col-xl-2 col-form-label">IP Whitelist</label>
 					<div class="col-sm-8 col-md-6 col-lg-4">
-						<input class="form-control" type="text" name="ip_addr" value="<?=set_value('ip_addr', @$result['ip_addr'])?>" placeholder="" required="required"/>
+						<input class="form-control" type="text" name="ip_addr" value="<?=set_value('ip_addr', @$result['ip_addr'])?>" placeholder=""/>
 						<small class="small" style="display:block">Kosongkan jika tidak diperlukan</small>
 					</div>
 			</div>

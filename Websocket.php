@@ -24,6 +24,7 @@ class WebSocketServer implements MessageComponentInterface {
         // Mengirim pesan ke semua klien terhubung
         foreach ($this->clients as $client) {
             $client->send($msg);
+            echo "Kirim Pesan: {$msg}\n";
         }
     }
 

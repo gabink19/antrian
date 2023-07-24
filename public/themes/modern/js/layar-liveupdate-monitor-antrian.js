@@ -14,13 +14,19 @@ const data_layar_antrian = [];
 
 	socket.onmessage = function(event) {
 		var msg = event.data
-		console.log(msg)
-		if (msg=="panggil"){
+		id_kategori = $('#huruf_awal_layar').text().split(',')
+		spt_msg = msg.split('_')
+		msgNew = ''
+		$.each(id_kategori, function( index, value ) {
+			if (spt_msg[1]==value){
+				msgNew = spt_msg[0]
+			}
+		});
+		if (msgNew=="panggil"){
 			check_current_antrian();
-		}else if (msg=="panggilulang"){
+		}else if (msgNew=="panggilulang"){
 			check_panggil_ulang_antrian();
 		}
-		check_perubahan_antrian();
 	};
 
 	socket.onclose = function() {
@@ -170,10 +176,15 @@ const data_layar_antrian = [];
 		suara = audio_object[i];
 		
 		console.log(i + "-" + audio_object.length);
+		audio_onoff = $('#audio_onoff').text()
 		if (suara !== undefined) {
-			suara.addEventListener('ended', playSound);
-			suara.play();
-			i++;
+			if(audio_onoff=='on'){
+				suara.addEventListener('ended', playSound);
+				suara.play();
+				i++;
+			}else{
+				audio_ended = true;
+			}
 		} else {
 			audio_ended = true;
 		}
