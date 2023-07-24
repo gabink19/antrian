@@ -260,8 +260,8 @@ echo '</script>';
 	<span style="display:none" id="awalan-panggil"><?=json_encode($awalan_panggil['nama_file'])?></span>
 	<script type="text/javascript">
 		$(document).ready(function() {
-			Swal.fire('Layar Monitor Siap')
-		})
+            $('[data-plyr="play"]').click();
+        });
 	</script>
 </body>
 </html>

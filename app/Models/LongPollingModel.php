@@ -125,16 +125,23 @@ class LongPollingModel extends \App\Models\BaseModel
 								WHERE tanggal = ?
 							)
 					AS antrian_detail USING(id_antrian_panggil)
-				WHERE antrian_panggil.id_antrian_kategori IN ('.$id.') AND antrian_panggil.tanggal = ?  
-				GROUP BY antrian_panggil.id_antrian_kategori 
+				WHERE antrian_panggil.id_antrian_kategori IN ('.$id.') AND antrian_panggil.tanggal = ? 
 				ORDER BY antrian_panggil.id_antrian_kategori ASC ';
 		$result = $this->db->query($sql, [$tanggal, $tanggal])->getResultArray();
+		$res = [];
 		if ($result) {
 			foreach ($result as &$val) {
 				$val['id'] = $id;
+				if(!isset($res[$val['id_antrian_panggil']])){
+					$res[$val['id_antrian_panggil']] = $val;
+				}else{
+					if (strtotime($res[$val['id_antrian_panggil']]['waktu_panggil'])<strtotime($val['waktu_panggil'])) {
+						$res[$val['id_antrian_panggil']] = $val;
+					}
+				}
 			}
 		}
-		return $result;
+		return $res;
 	}
 	public function getLastAntrianAmbilOrDipanggil($id) {
 		$sql = 'SELECT id_antrian_kategori, jml_antrian, jml_dipanggil, MAX(time_ambil) AS time_ambil, MAX(time_dipanggil) AS time_dipanggil 

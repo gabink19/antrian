@@ -61,8 +61,16 @@ class AntrianPanggilModel extends \App\Models\BaseModel
 	}
 	
 	public function getAntrianKategoriById($id) {
-		$sql = 'SELECT * FROM antrian_kategori WHERE id_antrian_kategori = ?';
-		$result = $this->db->query($sql, trim($id))->getRowArray();
+		$sql = 'SELECT antrian_kategori.*, IF(nomor_panggil = "" OR nomor_panggil IS NULL, 0, nomor_panggil) AS nomor_panggil
+				FROM antrian_kategori 
+				LEFT JOIN antrian_panggil USING(id_antrian_kategori)
+				LEFT JOIN antrian_panggil_detail USING(id_antrian_panggil)
+				WHERE id_antrian_kategori = ? AND tanggal = ? ORDER BY id_antrian_panggil_detail DESC';
+		$result = $this->db->query($sql, [trim($id), date('Y-m-d')])->getRowArray();
+		if (empty($result)){
+			$sql = 'SELECT * FROM antrian_kategori WHERE id_antrian_kategori = ?';
+			$result = $this->db->query($sql, trim($id))->getRowArray();
+		}
 		return $result;
 	}
 	
@@ -85,17 +93,15 @@ class AntrianPanggilModel extends \App\Models\BaseModel
 		return $result;
 	}
 		
-	public function panggilAntrian($id_antrian_kategori, $id_antrian_detail) 
+	public function panggilAntrian($id_antrian_kategori, $id_antrian_detail, $nomor_antrian='false') 
 	{
 		$tanggal = date('Y-m-d');
 		$sql = 'SELECT * FROM antrian_panggil WHERE id_antrian_kategori = ? AND tanggal = "' . $tanggal . '"';
 		$antrian_panggil = $this->db->query($sql, (int) $id_antrian_kategori)->getRowArray();
-		
 		if ($antrian_panggil) {
 			$next = $antrian_panggil['jml_dipanggil'] + 1;
 			$data_db['jml_dipanggil'] = $next;
 			$data_db['time_dipanggil'] = date('H:i:s');
-			
 			$this->db->transStart();
 			$this->db->table('antrian_panggil')->update($data_db, ['id_antrian_kategori' => $id_antrian_kategori, 'tanggal' => $tanggal]);
 			
@@ -107,7 +113,31 @@ class AntrianPanggilModel extends \App\Models\BaseModel
 			$data_db['id_antrian_panggil'] = $antrian_panggil['id_antrian_panggil'];
 			$data_db['id_antrian_detail'] = $id_antrian_detail;
 			$data_db['awalan_panggil'] = $antrian_kategori['awalan'];
-			$data_db['nomor_panggil'] = $next;
+			if($nomor_antrian!='false'){
+				$data_db['nomor_panggil'] = $nomor_antrian;
+				$data_db['spesial_panggil'] = 1;
+			}else{
+				$sql = 'SELECT nomor_panggil
+						FROM antrian_panggil_detail WHERE id_antrian_panggil = ? AND spesial_panggil = 1 ORDER BY nomor_panggil asc';
+				$group_sp = $this->db->query($sql, (int) $antrian_panggil['id_antrian_panggil'])->getResultArray();
+				
+				$sql = 'SELECT IF(nomor_panggil = "" OR nomor_panggil IS NULL, 0, nomor_panggil) AS nomor_panggil 
+						FROM antrian_panggil_detail WHERE id_antrian_panggil = ? AND spesial_panggil = 0 ORDER BY id_antrian_panggil_detail DESC';
+				$last_antrian = $this->db->query($sql, (int) $antrian_panggil['id_antrian_panggil'])->getRowArray();
+				if(empty($last_antrian)){
+					$data_db['nomor_panggil'] = 1;
+				}else{
+					$data_db['nomor_panggil'] = $last_antrian['nomor_panggil'] + 1;
+					if($group_sp != ''){
+						foreach($group_sp as $v){
+							if($v['nomor_panggil']!=$data_db['nomor_panggil']){
+								break;
+							}
+							$data_db['nomor_panggil']++;
+						}
+					}
+				}
+			}
 			$data_db['waktu_panggil'] = date('H:i:s');
 			$this->db->table('antrian_panggil_detail')->insert($data_db);
 			
@@ -132,7 +162,7 @@ class AntrianPanggilModel extends \App\Models\BaseModel
 	// Dipanggil group by loket
 	public function getDipanggil($id_antrian_kategori,$ip_addr=false) {
 		$tanggal = date('Y-m-d');
-		$sql = 'SELECT id_antrian_detail, COUNT(*) AS jml_dipanggil, MAX(nomor_panggil) AS no_terakhir
+		$sql = 'SELECT id_antrian_detail, COUNT(*) AS jml_dipanggil, MAX(nomor_panggil) AS no_terakhir, id_antrian_panggil
 				FROM antrian_panggil
 				LEFT JOIN antrian_panggil_detail USING(id_antrian_panggil)
 				WHERE id_antrian_kategori = ? AND tanggal = ?
@@ -155,6 +185,11 @@ class AntrianPanggilModel extends \App\Models\BaseModel
 			}else{
 				$result[$val['id_antrian_detail']] = $val;
 			}
+			$sql = 'SELECT nomor_panggil
+					FROM antrian_panggil_detail 
+					WHERE id_antrian_panggil = ? AND id_antrian_detail = ? ORDER BY waktu_panggil DESC';
+			$asb = $this->db->query($sql, [$val['id_antrian_panggil'], $val['id_antrian_detail']])->getRowArray();
+			$result[$val['id_antrian_detail']]['no_terakhir'] = (isset($asb['nomor_panggil']))?$asb['nomor_panggil']:0;
 		}
 		
 		return $result;
@@ -240,8 +275,9 @@ class AntrianPanggilModel extends \App\Models\BaseModel
 	}
 	public function getAntrianDetailByIdAndAntrian($id,$nomor_antrian) {
 		$sql = 'SELECT * FROM antrian_panggil_detail
-				WHERE id_antrian_detail = ? AND nomor_panggil = ?';
-		$result = $this->db->query($sql, [trim($id),trim($nomor_antrian)])->getRowArray();
+				LEFT JOIN antrian_panggil USING(id_antrian_panggil)
+				WHERE id_antrian_detail = ? AND nomor_panggil = ? AND tanggal = ?';
+		$result = $this->db->query($sql, [trim($id),trim($nomor_antrian), date('Y-m-d')])->getRowArray();
 		return $result;
 	}
 	public function saveSpesialPanggilAntrian($id,$nomor_antrian)
@@ -261,6 +297,35 @@ class AntrianPanggilModel extends \App\Models\BaseModel
 			return $this->db->table('antrian_panggil_ulang')->insert($data_db);
 		}
 		return false;
+	}
+	public function getAntrianPanggil($id,$nomor_antrian,$kategori){
+		$sql = 'SELECT (jml_antrian - jml_dipanggil) as sisa_antrian, nomor_panggil as no_terakhir, nomor_panggil, spesial_panggil 
+				FROM antrian_panggil
+				INNER JOIN antrian_panggil_detail USING(id_antrian_panggil)
+				WHERE id_antrian_kategori = ? AND tanggal = ? AND spesial_panggil = 0
+				ORDER BY waktu_panggil DESC';
+		
+		$data = $this->db->query($sql, [$kategori, date('Y-m-d')])->getRowArray();
+		if(!empty($data)){
+			$max_antrian = $data['no_terakhir'] + $data['sisa_antrian'];
+			if($nomor_antrian > $max_antrian){
+				return false;
+			}
+			if($data['nomor_panggil'] >= $nomor_antrian){
+				return false;
+			}
+		}else{
+			$sql = 'SELECT (jml_antrian - jml_dipanggil) as sisa_antrian
+					FROM antrian_panggil
+					WHERE id_antrian_kategori = ? AND tanggal = ? LIMIT 1';
+			$data = $this->db->query($sql, [$kategori, date('Y-m-d')])->getRowArray();
+			$max_antrian = 0 + $data['sisa_antrian'];
+			echo '<pre>'; print_r($max_antrian); echo '</pre>'; die();
+			if($nomor_antrian > $max_antrian){
+				return false;
+			}
+		}
+		return true;
 	}
 }
 ?>

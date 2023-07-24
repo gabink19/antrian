@@ -27,6 +27,7 @@ input[type=number] {
 		$jml_antrian = key_exists($kategori['id_antrian_kategori'], $antrian_urut) ? $antrian_urut[$kategori['id_antrian_kategori']]['jml_antrian'] : 0;
 		$dipanggil = key_exists($kategori['id_antrian_kategori'], $antrian_urut) ? $antrian_urut[$kategori['id_antrian_kategori']]['jml_dipanggil'] : 0;
 		$sisa = $jml_antrian - $dipanggil;
+		$idskategori = [];
 				
 		?>
 		<div class="mb-3">Nama Antrian</div>
@@ -36,8 +37,9 @@ input[type=number] {
 				<th>Kategori</th>
 				<th>Jml. Antrian</th>
 				<th>Awalan</th>
-				<th>No. Terakhir</th>
+				<th>Jml. Dipanggil</th>
 				<th>Sisa</th>
+				<th>No. Terakhir</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -47,6 +49,7 @@ input[type=number] {
 				<td><?=$kategori['awalan']?></td>
 				<td id="total-antrian-dipanggil"><?=$dipanggil?></td>
 				<td id="total-sisa-antrian"><?=$sisa?></td>
+				<td id="nomor-terakhir"><?=(isset($kategori['nomor_panggil']))?$kategori['nomor_panggil']:0;?></td>
 		</tbody>
 		</table>
 		<div class="mb-3">Tujuan</div>
@@ -68,8 +71,8 @@ input[type=number] {
 			$no = 1;
 			$btn_panggil_disabled = $sisa == 0 ? ' disabled' : '';
 			
-				
 			foreach ($antrian as $val) {
+				$idskategori[$val['id_antrian_detail']] = $kategori['id_antrian_kategori'];
 				$jml = key_exists($val['id_antrian_detail'], $jml_dipanggil) ? $jml_dipanggil[$val['id_antrian_detail']]['jml_dipanggil'] : 0;
 				$no_terakhir = key_exists($val['id_antrian_detail'], $jml_dipanggil) ? $jml_dipanggil[$val['id_antrian_detail']]['no_terakhir'] : 0;
 				$btn_panggil_ulang_disabled = $jml == 0 ? ' disabled' : '';
@@ -107,8 +110,8 @@ input[type=number] {
 												'label' => 'Lewati'
 											])
 						. '</td>
-						<td><input class="form-control" type="number" id="spesial-call-'.$val['id_antrian_detail'].'"style="width: 50px;float: left;margin-right: 10px;height: 30px;" '.$btn_panggil_ulang_disabled.' />' . btn_label([
-												'attr' => ['class' => 'btn btn-primary btn-xs spesial-panggil' . $btn_panggil_ulang_disabled
+						<td><input class="form-control in-spesial-panggil" type="number" id="spesial-call-'.$val['id_antrian_detail'].'"style="width: 50px;float: left;margin-right: 10px;height: 30px;" />' . btn_label([
+												'attr' => ['class' => 'btn btn-primary btn-xs spesial-panggil'
 															, 'data-id-antrian-detail' => $val['id_antrian_detail']
 															, 'data-url' => base_url() . '/antrian-panggil/ajax-spesial-panggil-antrian'
 														],
@@ -122,6 +125,9 @@ input[type=number] {
 			?>
 		</tbody>
 		</table>
+		<?php foreach ($idskategori as $key => $value) {?>
+			<span id="detail_id_kategori_<?=$key?>" style="display:none"><?=$value?></span>
+		<?php } ?>
 		<span id="id-antrian-kategori" style="display:none"><?=$kategori['id_antrian_kategori']?></span>
 	</div>
 </div>

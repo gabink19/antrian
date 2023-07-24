@@ -27,10 +27,10 @@ $(document).ready(function() {
 						if (jml_dipanggil < parseInt(v['jml_dipanggil'])) 
 						{
 							$td = $('#antrian-detail-' + v['id_antrian_detail']).find('td');
-							$td.eq(2).html(v['jml_dipanggil']);
+							$td.eq(2).html(v['nomor_panggil']);
 							
 							jml = parseInt($td.eq(3).text());
-							// $td.eq(3).html(jml + 1);
+							$td.eq(3).html(jml + 1);
 						}		
 						$('#total-antrian-'+v['id_antrian_kategori']).html(v['jml_antrian']);
 						$('#total-antrian-dipanggil-'+v['id_antrian_kategori']).html(v['jml_dipanggil']);
@@ -40,16 +40,10 @@ $(document).ready(function() {
 						if (sisa > 0) {
 							$('.panggilspc-'+v['id_antrian_kategori']).removeClass('disabled');
 							$('#panggil-antrian-'+v['id_antrian_detail']).removeClass('disabled');
-							$('#lewati-antrian-'+v['id_antrian_detail']).removeClass('disabled');
+							$('#spesial-antrian-'+v['id_antrian_detail']).removeClass('disabled');
+							$('#spesial-call-'+v['id_antrian_detail']).prop("disabled", false);
 						} else {
 							$('#panggil-antrian-'+v['id_antrian_detail']).attr('disabled', 'disabled').addClass('disabled');
-							$('#lewati-antrian-'+v['id_antrian_detail']).attr('disabled', 'disabled').addClass('disabled');
-						}
-					});
-					$('a.lewati-antrian').each(function(index, element) {
-						var jmlh = $(this).parent().prev().prev().prev().html();
-						if (jmlh=='0'){
-							$(this).attr('disabled', 'disabled').addClass('disabled');
 						}
 					});
 				}

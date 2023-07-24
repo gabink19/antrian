@@ -28,28 +28,23 @@ $(document).ready(function() {
 						if (jml_dipanggil < parseInt(v['jml_dipanggil'])) 
 						{
 							$td = $('#antrian-detail-' + v['id_antrian_detail']).find('td');
-							$td.eq(2).html(v['jml_dipanggil']);
+							$td.eq(2).html(v['nomor_panggil']);
 							jml = parseInt($td.eq(3).text());
 							$td.eq(3).html(jml + 1);
 						}
 											
 						$('#total-antrian').html(v['jml_antrian']);
 						$('#total-antrian-dipanggil').html(v['jml_dipanggil']);
+						$('#nomor-terakhir').html(v['nomor_dipanggil']);
 						
 						sisa = parseInt(v['jml_antrian']) - parseInt(v['jml_dipanggil']);
 						$('#total-sisa-antrian').html(sisa);
 						if (sisa > 0) {
 							$('a.panggil-antrian').removeClass('disabled');
-							$('a.lewati-antrian').removeClass('disabled');
+							$('a.spesial-panggil').removeClass('disabled');
+							$('input.in-spesial-panggil').prop("disabled", false); ;
 						} else {
 							$('a.panggil-antrian').attr('disabled', 'disabled').addClass('disabled');
-							$('a.lewati-antrian').attr('disabled', 'disabled').addClass('disabled');
-						}
-					});
-					$('a.lewati-antrian').each(function(index, element) {
-						var jmlh = $(this).parent().prev().prev().prev().html();
-						if (jmlh=='0'){
-							$(this).attr('disabled', 'disabled').addClass('disabled');
 						}
 					});
 				}

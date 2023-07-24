@@ -160,11 +160,11 @@ const data_layar_antrian = [];
 			data = data_layar_antrian[0];
 			console.log(data);
 			if (data) {
-				console.log(data.awalan + data.jml_dipanggil);
-				$('.current-antrian-number').find('.number-one').html(data.awalan + data.jml_dipanggil);
+				console.log(data.awalan + data.nomor_panggil);
+				$('.current-antrian-number').find('.number-one').html(data.awalan + data.nomor_panggil);
 				$('.current-antrian-tujuan').html(data.nama_antrian_tujuan);
 				$('#list-awalan-' + data.id_antrian_tujuan).html(data.awalan);
-				$('#list-antrian-detail-nomor-' + data.id_antrian_tujuan).html(data.jml_dipanggil);
+				$('#list-antrian-detail-nomor-' + data.id_antrian_tujuan).html(data.nomor_panggil);
 			}
 			data_layar_antrian.splice(0, 1);
 		}
@@ -200,7 +200,7 @@ const data_layar_antrian = [];
 			audio.push(data.awalan.toLowerCase() + '.wav');
 		}
 
-		audio_angka = terbilang(data.jml_dipanggil);
+		audio_angka = terbilang(data.nomor_panggil);
 		audio_angka = audio_angka.split(' ');
 		for (k in audio_angka) {
 			audio_angka[k] = audio_angka[k].toLowerCase() + '.wav';

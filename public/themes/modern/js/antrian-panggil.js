@@ -27,14 +27,14 @@ $(document).ready(function(){
 				data = $.parseJSON(data);
 				$this.prop('disabled', false);
 				$loader.remove();
-				$('#total-antrian-dipanggil').html(data.message.jml_dipanggil);
+				$('#total-antrian-dipanggil').html(data.message.nomor_antrian);
 				
 				sisa = parseInt(data.message.jml_antrian) - parseInt(data.message.jml_dipanggil);
 				$('#total-sisa-antrian').html(sisa);
 				$this.parent().next().find('a.lewati-antrian').removeClass('disabled');
 				$this.parent().next().find('a.panggil-ulang-antrian').removeClass('disabled');
 				
-				$this.parent().prev().prev().html(data.message.jml_dipanggil);
+				$this.parent().prev().prev().html(data.message.nomor_antrian);
 				
 				// jml dipanggil
 				$this.parent().prev().html(data.message.jml_dipanggil_by_loket);
@@ -141,36 +141,8 @@ $(document).ready(function(){
 				data = $.parseJSON(data);
 				$this.prop('disabled', false);
 				$loader.remove();
-				$('#total-antrian-dipanggil').html(data.message.jml_dipanggil);
-				
-				sisa = parseInt(data.message.jml_antrian) - parseInt(data.message.jml_dipanggil);
-				$('#total-sisa-antrian').html(sisa);
-				$this.parent().next().find('a.lewati-antrian').removeClass('disabled');
-				$this.parent().next().next().next().find('a.panggil-ulang-antrian').removeClass('disabled');
-				
-				$this.parent().prev().prev().prev().prev().html(data.message.jml_dipanggil);
-				
-				// jml dipanggil
-				$this.parent().prev().prev().prev().html(data.message.jml_dipanggil_by_loket);
-				
-				if (sisa == 0) {
-					$('.panggil-antrian').attr('disabled', 'disabled');
-					$('.panggil-antrian').addClass('disabled');
-					$('.panggil-antrian').prop('disabled', true);
-					$('.lewati-antrian').attr('disabled', 'disabled');
-					$('.lewati-antrian').addClass('disabled');
-					$('.lewati-antrian').prop('disabled', true);
-				} else {
-					$this.removeAttr('disabled');
-					$this.removeClass('disabled');
-				}
-				
-				if (suara != '') {
-					suara.pause();
-				}
-				
-				socket.send('panggil');
-				
+				$this.removeAttr('disabled');
+				$this.removeClass('disabled');
 			}, error: function(xhr) {
 				console.log(xhr);
 				$this.removeAttr('disabled');
@@ -202,6 +174,7 @@ $(document).ready(function(){
 		$this.prop('disabled', true);
 		id_antrian_detail = $this.attr('data-id-antrian-detail')
 		nomor_antrian = $('#spesial-call-'+id_antrian_detail).val()
+		kategori = $('#detail_id_kategori_'+id_antrian_detail).text()
 		if(nomor_antrian==''){
 			$this.prop('disabled', false);
 			$this.removeAttr('disabled');
@@ -212,7 +185,7 @@ $(document).ready(function(){
 		$.ajax({
 			url : base_url + 'antrian-panggil/ajax-spesial-panggil-antrian',
 			type : 'post',
-			data : 'id=' + id_antrian_detail + '&nomor_antrian=' + nomor_antrian,
+			data : 'id=' + id_antrian_detail + '&nomor_antrian=' + nomor_antrian+ '&kategori=' + kategori,
 			success : function(result) {
 				result = $.parseJSON(result);
 				data = result.message;
@@ -236,7 +209,9 @@ $(document).ready(function(){
 					if (suara != '') {
 						suara.pause();
 					}
-					socket.send('panggilulang');
+					$('[data-id-antrian-detail="'+id_antrian_detail+'"]').removeClass('disabled');
+					$('#spesial-call-'+id_antrian_detail).val('')
+					socket.send(result.ws);
 				}
 			}, error: function(xhr) {
 				$this.prop('disabled', false);

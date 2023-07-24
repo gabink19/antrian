@@ -172,7 +172,6 @@ class Antrian_panggil extends \App\Controllers\BaseController
 		}
 		
 		$urut = $this->model->getAntrianUrutByIdKategori($result['id_antrian_kategori']);
-
 		if ($urut['jml_dipanggil'] >= $urut['jml_antrian']) {
 			$message['status'] = 'error';
 			$message['message'] = 'Semua antrian sudah dipanggil';
@@ -260,22 +259,13 @@ class Antrian_panggil extends \App\Controllers\BaseController
 			exit;
 		}
 		
-		$panggil = $this->model->panggilAntrian($result['id_antrian_kategori'], $id);
-		if ($panggil) {
-			$message['status'] = 'ok';
-			$message['message'] = $panggil;
-		} else {
-			$message['status'] = 'error';
-			$message['message'] = 'Error memanggil antrian';
-		}
-		
-		echo json_encode($message);
+		echo json_encode('skip');
 		exit;
 	}
 
 	public function ajax_spesial_panggil_antrian() 
 	{
-		if (empty($_POST['id']) || empty($_POST['nomor_antrian'])) {
+		if (empty($_POST['id']) || empty($_POST['nomor_antrian']) || empty($_POST['kategori'])) {
 			$message['status'] = 'error';
 			$message['message'] = 'Invalid input';
 			echo json_encode($message);
@@ -284,25 +274,42 @@ class Antrian_panggil extends \App\Controllers\BaseController
 		
 		$id = $_POST['id'];
 		$nomor_antrian = $_POST['nomor_antrian'];
-		$antrian_detail = $this->model->getAntrianDetailByIdAndAntrian($id,$nomor_antrian);
-		if (!$antrian_detail) {
-			$message['status'] = 'error';
-			$message['message'] = 'Invalid input';
+		$kategori = $_POST['kategori'];
+		$antrianpanggil = $this->model->getAntrianPanggil($id,$nomor_antrian,$kategori);
+		if (!$antrianpanggil){
+			$antrian_detail = $this->model->getAntrianDetailByIdAndAntrian($id,$nomor_antrian);
+			if (!$antrian_detail) {
+				$message['status'] = 'error';
+				$message['message'] = 'Invalid input';
+				echo json_encode($message);
+				exit;
+			}
+			
+			$save = $this->model->saveSpesialPanggilAntrian($id,$nomor_antrian);
+	
+			if ($save) {
+				$message['status'] = 'ok';
+				$message['ws'] = 'panggilulang';
+				$message['message'] = 'Data berhasil disimpan';
+			} else {
+				$message['status'] = 'error';
+				$message['message'] = 'Data gagal disimpan';
+			}
+			
 			echo json_encode($message);
-			exit;
+		}else{
+			$panggil = $this->model->panggilAntrian($kategori, $id, $nomor_antrian);
+			if ($panggil) {
+				$message['status'] = 'ok';
+				$message['ws'] = 'panggil';
+				$message['message'] = $panggil;
+			} else {
+				$message['status'] = 'error';
+				$message['message'] = 'Error memanggil antrian';
+			}
+			
+			echo json_encode($message);
 		}
-		
-		$save = $this->model->saveSpesialPanggilAntrian($id,$nomor_antrian);
-
-		if ($save) {
-			$message['status'] = 'ok';
-			$message['message'] = 'Data berhasil disimpan';
-		} else {
-			$message['status'] = 'error';
-			$message['message'] = 'Data gagal disimpan';
-		}
-		
-		echo json_encode($message);
 		exit;
 	}
 
