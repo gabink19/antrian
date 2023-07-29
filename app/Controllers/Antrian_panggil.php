@@ -272,19 +272,21 @@ class Antrian_panggil extends \App\Controllers\BaseController
 		exit;
 	}
 
-	public function ajax_spesial_panggil_antrian() 
+	public function ajax_spesial_panggil_antrian($id='',$nomor_antrian='',$kategori='',$skip=false) 
 	{
-		if (empty($_POST['id']) || empty($_POST['nomor_antrian']) || empty($_POST['kategori'])) {
-			$message['status'] = 'error';
-			$message['message'] = 'Invalid input';
-			echo json_encode($message);
-			exit;
+		if ($id=='' || $nomor_antrian=='' || $kategori=='') {
+			if (empty($_POST['id']) || empty($_POST['nomor_antrian']) || empty($_POST['kategori'])) {
+				$message['status'] = 'error';
+				$message['message'] = 'Invalid input';
+				echo json_encode($message);
+				exit;
+			}
 		}
 		
-		$id = $_POST['id'];
-		$nomor_antrian = $_POST['nomor_antrian'];
-		$kategori = $_POST['kategori'];
-		$antrianpanggil = $this->model->getAntrianPanggil($id,$nomor_antrian,$kategori);
+		$id = ($id=='')?$_POST['id']:$id;
+		$nomor_antrian = ($nomor_antrian=='')?$_POST['nomor_antrian']:$nomor_antrian;
+		$kategori = ($kategori=='')?$_POST['kategori']:$kategori;
+		$antrianpanggil = $this->model->getAntrianPanggil($id,$nomor_antrian,$kategori,$skip);
 		if (!$antrianpanggil){
 			$antrian_detail = $this->model->getAntrianDetailByIdAndAntrian($id,$nomor_antrian);
 			if (!$antrian_detail) {
@@ -319,7 +321,10 @@ class Antrian_panggil extends \App\Controllers\BaseController
 			
 			echo json_encode($message);
 		}
-		exit;
+		return $message;
+		if (!$skip) {
+			exit;
+		}
 	}
 
 	public function ajax_cetak_antrian_c() 

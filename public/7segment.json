@@ -1,0 +1,34 @@
+[
+    {
+        "no_bilik": "1",
+        "nama": "Bilik 1",
+        "ip_addr": "192.168.1.182",
+        "nomor_panggil": "1",
+        "waktu_panggil": "13:02:06",
+        "status": "kosong"
+    },
+    {
+        "no_bilik": "2",
+        "nama": "Bilik 2",
+        "ip_addr": "",
+        "nomor_panggil": "2",
+        "waktu_panggil": "13:48:29",
+        "status": "kosong"
+    },
+    {
+        "no_bilik": "3",
+        "nama": "Bilik 3",
+        "ip_addr": "",
+        "nomor_panggil": "4",
+        "waktu_panggil": "14:42:30",
+        "status": "proses"
+    },
+    {
+        "no_bilik": "4",
+        "nama": "Bilik 4",
+        "ip_addr": "",
+        "nomor_panggil": "-",
+        "waktu_panggil": "00:00:00",
+        "status": "kosong"
+    }
+]

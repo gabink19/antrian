@@ -8,6 +8,8 @@
 
 namespace App\Controllers;
 use App\Models\LongPollingModel;
+use Textalk\Websocket\Client as TextalkWebSocketClient;
+use React\EventLoop\Factory;
 
 class LongPolling extends \App\Controllers\BaseController
 {
@@ -308,5 +310,36 @@ class LongPolling extends \App\Controllers\BaseController
 				);
 			exit;
 		}
+	}
+
+	public function set_antrian_lab() 
+	{
+		if (!isset($_GET['no_lab']) || !isset($_GET['no_bilik'])) {
+			return json_encode(['status' => 'error', 'message' => 'Parameter tidak sesuai.']);
+		}
+		$no_lab = $_GET['no_lab'];
+		$no_bilik = $_GET['no_bilik'];
+		$get_lab = $this->model->getAntrianLab($no_lab,$no_bilik);
+		if (!$get_lab) {
+			return json_encode(['status' => 'error', 'message' => 'No Lab tidak ditemukan.']);
+		}
+		$AntrianPanggilan = new Antrian_panggil();
+		$panggil_spec = $AntrianPanggilan->ajax_spesial_panggil_antrian($get_lab['id_antrian_detail'], $get_lab['nomor_antrian'], $get_lab['id_antrian_kategori'],true);
+		if (isset($panggil_spec['status']) && $panggil_spec['status']=='ok') {
+			$set_lab = $this->model->setAntrianLab($no_lab,$no_bilik);
+			$WS = $this->webSocket($panggil_spec['ws']);
+			$this->model->update7segment();
+			return json_encode(['status' => 'success', 'message' => 'Antrian Lab berhasil disimpan.']);
+		}
+		
+		return json_encode(['status' => 'error', 'message' => 'Antrian Lab gagal diupdate']);
+	}
+
+	private function webSocket($messageToSend)
+	{
+		$client = new \WebSocket\Client("ws://localhost:8080");
+		$client->text($messageToSend);
+		
+		$client->close();
 	}
 }

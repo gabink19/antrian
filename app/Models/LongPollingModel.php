@@ -274,5 +274,84 @@ class LongPollingModel extends \App\Models\BaseModel
 		
 		return $result;
 	}
+	
+	public function getAntrianLab($no_lab,$no_bilik) {
+		$sql = 'SELECT id_antrian_detail,id_antrian_kategori,id_antrian_tujuan FROM antrian_tujuan
+				LEFT JOIN antrian_detail USING(id_antrian_tujuan)
+				WHERE nama_antrian_tujuan = ?';
+		$result = $this->db->query($sql, ["Bilik ".$no_bilik])->getRowArray();
+		if ($result) {
+			$sql = 'SELECT nomor_antrian FROM antrian_lab
+					WHERE no_lab = ? AND created_at >= ? AND created_at <= ? ORDER BY id DESC';
+			$res= $this->db->query($sql, [$no_lab, date('Y-m-d 00:00:00'), date('Y-m-d 23:59:59')])->getRowArray();
+			if ($res) {
+				$result['nomor_antrian'] = $res['nomor_antrian'];
+				return $result;
+			}
+		}
+		return false;
+	}
+
+	public function setAntrianLab($no_lab,$no_bilik) {
+		$data_db['no_bilik'] = $no_bilik;
+		$data_db['status'] = 'proses';
+		$update = $this->db->table('antrian_lab')->update($data_db, ['no_lab' => $no_lab]);
+		return $update;
+	}
+
+	public function update7segment(){
+		$sql = 'SELECT `at`.id_antrian_tujuan as id, nama_antrian_tujuan as nama,ip_addr FROM antrian_tujuan as `at`
+		WHERE nama_antrian_tujuan LIKE "%Bilik%" ;';
+		$result = $this->db->query($sql, [date('Y-m-d')])->getResultArray();
+		
+		$cek_status_bilik = 'SELECT `status` FROM antrian_lab
+		WHERE no_bilik = ? AND created_at >= ? AND created_at <= ? ORDER BY created_at DESC LIMIT 1;';
+
+		$bilik = [];
+		if (!empty($result)) {
+			foreach ($result as $key => $value) {
+				$no_bilik = str_replace('Bilik ','',$value['nama']);
+				$bilik[$value['id']]['no_bilik'] = $no_bilik;
+				$bilik[$value['id']]['nama'] = $value['nama'];
+				$bilik[$value['id']]['ip_addr'] = $value['ip_addr'];
+				$bilik[$value['id']]['nomor_panggil'] = "-";
+				$bilik[$value['id']]['waktu_panggil'] = "00:00:00";
+				
+				$rs = $this->db->query($cek_status_bilik, [$no_bilik,date('Y-m-d 00:00:00'),date('Y-m-d 23:59:59')])->getRowArray();
+				$bilik[$value['id']]['status'] = (isset($rs['status']))?$rs['status']:'kosong';
+			}
+			$sql = 'SELECT `at`.id_antrian_tujuan as id, nama_antrian_tujuan as nama, nomor_panggil ,waktu_panggil, ip_addr FROM antrian_tujuan as `at`
+			LEFT JOIN antrian_detail as ad ON ad.id_antrian_tujuan = `at`.id_antrian_tujuan
+			LEFT JOIN antrian_panggil_detail `apd` ON ad.id_antrian_detail = `apd`.id_antrian_detail
+			LEFT JOIN antrian_panggil `ap` ON apd.id_antrian_panggil = `ap`.id_antrian_panggil
+			WHERE tanggal = ? AND nama_antrian_tujuan LIKE "%Bilik%" ;';
+			$res = $this->db->query($sql, [date('Y-m-d')])->getResultArray();
+			if (!empty($res)) {
+				foreach ($res as $key => $value) {
+					if (strtotime($value['waktu_panggil'])>strtotime($bilik[$value['id']]['waktu_panggil'])) {
+						$no_bilik = str_replace('Bilik ','',$value['nama']);
+						$bilik[$value['id']]['no_bilik'] = $no_bilik;
+						$bilik[$value['id']]['nama'] = $value['nama'];
+						$bilik[$value['id']]['ip_addr'] = $value['ip_addr'];
+						$bilik[$value['id']]['nomor_panggil'] = $value['nomor_panggil'];
+						$bilik[$value['id']]['waktu_panggil'] = $value['waktu_panggil'];
+						$rs = $this->db->query($cek_status_bilik, [$no_bilik,date('Y-m-d 00:00:00'),date('Y-m-d 23:59:59')])->getRowArray();
+						$bilik[$value['id']]['status'] = (isset($rs['status']))?$rs['status']:'kosong';
+					}
+				}
+			}
+		}
+		$bilik = array_values($bilik);
+		$filename = FCPATH . 'public/7segment.json';
+		$file_content = json_encode($bilik,JSON_PRETTY_PRINT);
+		
+		$file_handle = fopen($filename, 'w');
+		
+		if ($file_handle) {
+			if (fwrite($file_handle, $file_content) !== false) {
+			}
+			fclose($file_handle);
+		}
+	}
 }
 ?>

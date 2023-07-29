@@ -298,12 +298,13 @@ class AntrianPanggilModel extends \App\Models\BaseModel
 		}
 		return false;
 	}
-	public function getAntrianPanggil($id,$nomor_antrian,$kategori){
-		$sql = 'SELECT (jml_antrian - jml_dipanggil) as sisa_antrian, nomor_panggil as no_terakhir, nomor_panggil, spesial_panggil 
+	public function getAntrianPanggil($id,$nomor_antrian,$kategori,$skip=false){
+		$spesial = ($skip)?"":"AND spesial_panggil = 0";
+		$sql = "SELECT (jml_antrian - jml_dipanggil) as sisa_antrian, nomor_panggil as no_terakhir, nomor_panggil, spesial_panggil 
 				FROM antrian_panggil
 				INNER JOIN antrian_panggil_detail USING(id_antrian_panggil)
-				WHERE id_antrian_kategori = ? AND tanggal = ? AND spesial_panggil = 0
-				ORDER BY waktu_panggil DESC';
+				WHERE id_antrian_kategori = ? AND tanggal = ? $spesial
+				ORDER BY waktu_panggil DESC";
 		
 		$data = $this->db->query($sql, [$kategori, date('Y-m-d')])->getRowArray();
 		if(!empty($data)){
