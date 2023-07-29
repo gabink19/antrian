@@ -328,10 +328,25 @@ class LongPolling extends \App\Controllers\BaseController
 		if (isset($panggil_spec['status']) && $panggil_spec['status']=='ok') {
 			$set_lab = $this->model->setAntrianLab($no_lab,$no_bilik);
 			$WS = $this->webSocket($panggil_spec['ws']);
+			$WS = $this->webSocket($panggil_spec['ws']);
+			$WS = $this->webSocket($panggil_spec['ws']);
 			$this->model->update7segment();
 			return json_encode(['status' => 'success', 'message' => 'Antrian Lab berhasil disimpan.']);
 		}
 		
+		return json_encode(['status' => 'error', 'message' => 'Antrian Lab gagal diupdate']);
+	}
+
+	public function selesai() 
+	{
+		if (!isset($_GET['no_bilik'])) {
+			return json_encode(['status' => 'error', 'message' => 'Parameter tidak sesuai.']);
+		}
+		$set_lab = $this->model->setAntrianSelesai($_GET['no_bilik']);
+		if ($set_lab) {
+			$this->model->update7segment();
+			return json_encode(['status' => 'success', 'message' => 'Antrian Lab diupdate']);
+		}
 		return json_encode(['status' => 'error', 'message' => 'Antrian Lab gagal diupdate']);
 	}
 

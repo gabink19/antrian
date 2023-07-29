@@ -292,8 +292,11 @@ class Antrian_panggil extends \App\Controllers\BaseController
 			if (!$antrian_detail) {
 				$message['status'] = 'error';
 				$message['message'] = 'Invalid input';
-				echo json_encode($message);
-				exit;
+				if (!$skip) {
+					echo json_encode($message);
+					exit;
+				}
+				return $message;
 			}
 			
 			$save = $this->model->saveSpesialPanggilAntrian($id,$nomor_antrian);
@@ -307,7 +310,9 @@ class Antrian_panggil extends \App\Controllers\BaseController
 				$message['message'] = 'Data gagal disimpan';
 			}
 			
-			echo json_encode($message);
+			if (!$skip) {
+				echo json_encode($message);
+			}
 		}else{
 			$panggil = $this->model->panggilAntrian($kategori, $id, $nomor_antrian);
 			if ($panggil) {
@@ -319,12 +324,14 @@ class Antrian_panggil extends \App\Controllers\BaseController
 				$message['message'] = 'Error memanggil antrian';
 			}
 			
-			echo json_encode($message);
+			if (!$skip) {
+				echo json_encode($message);
+			}
 		}
-		return $message;
 		if (!$skip) {
 			exit;
 		}
+		return $message;
 	}
 
 	public function ajax_cetak_antrian_c() 

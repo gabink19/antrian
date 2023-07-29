@@ -21,14 +21,14 @@
         "ip_addr": "",
         "nomor_panggil": "4",
         "waktu_panggil": "14:42:30",
-        "status": "proses"
+        "status": "selesai"
     },
     {
         "no_bilik": "4",
         "nama": "Bilik 4",
         "ip_addr": "",
-        "nomor_panggil": "-",
-        "waktu_panggil": "00:00:00",
-        "status": "kosong"
+        "nomor_panggil": "5",
+        "waktu_panggil": "15:30:48",
+        "status": "selesai"
     }
 ]

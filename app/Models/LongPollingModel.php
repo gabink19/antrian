@@ -353,5 +353,12 @@ class LongPollingModel extends \App\Models\BaseModel
 			fclose($file_handle);
 		}
 	}
+
+	public function setAntrianSelesai($no_bilik) {
+		$data_db['no_bilik'] = $no_bilik;
+		$data_db['status'] = 'selesai';
+		$update = $this->db->table('antrian_lab')->update($data_db, ['no_bilik' => $no_bilik]);
+		return $update;
+	}
 }
 ?>
