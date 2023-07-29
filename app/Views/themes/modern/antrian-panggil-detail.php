@@ -28,7 +28,8 @@ input[type=number] {
 		$dipanggil = key_exists($kategori['id_antrian_kategori'], $antrian_urut) ? $antrian_urut[$kategori['id_antrian_kategori']]['jml_dipanggil'] : 0;
 		$sisa = $jml_antrian - $dipanggil;
 		$idskategori = [];
-				
+		$awalans = [];
+		$awalans[] = $kategori['awalan'];
 		?>
 		<div class="mb-3">Nama Antrian</div>
 		<table class="table display table-striped table-bordered table-hover" style="width:auto">
@@ -62,6 +63,7 @@ input[type=number] {
 				<th>Panggil Ulang</th>
 				<th>Lewati</th>
 				<th>Spesial Panggil</th>
+				<th <?= (in_array('C',$awalans))?'style="display:none;"':""?>>Cetak Antrian Bilik</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -78,7 +80,7 @@ input[type=number] {
 				echo '<tr id="antrian-detail-' . $val['id_antrian_detail'] . '">
 						<td>' . $no  . '</td>
 						<td>' . $val['nama_antrian_tujuan'] . '</td>
-						<td>' . $no_terakhir . '</td>
+						<td id="no_terakhir_'.$val['id_antrian_detail'].'">' . $no_terakhir . '</td>
 						<td>' . $jml . '</td>
 						<td>' . btn_label([
 											'attr' => ['class' => 'btn btn-secondary btn-xs panggil-antrian' . $btn_panggil_disabled
@@ -102,6 +104,7 @@ input[type=number] {
 						<td>' . btn_label([
 												'attr' => ['class' => 'btn btn-success btn-xs lewati-antrian' . $btn_panggil_ulang_disabled
 															, 'data-id-antrian-detail' => $val['id_antrian_detail']
+															, 'id'=>'lewati-antrian-'.$val['id_antrian_detail']
 															, 'data-url' => base_url() . '/antrian-panggil/ajax-lewati-antrian'
 														],
 												'url' => 'javascript:void(0)',
@@ -116,8 +119,21 @@ input[type=number] {
 												'url' => 'javascript:void(0)',
 												'label' => 'Panggil'
 											])
+						. '</td>';
+					if ($kategori['awalan']=='A'||$kategori['awalan']=='B') {
+						echo '<td><input class="form-control cetak-antrian-lab" type="text" id="cetak-antrian-'.$val['id_antrian_detail'].'"style="width: 70px;float: left;margin-right: 10px;height: 30px;font-size: 12px" placeholder="No. Lab"/>' . btn_label([
+												'attr' => ['class' => 'btn btn-primary btn-xs cetak-antrian-c '
+															, 'data-id-antrian-detail' => $val['id_antrian_detail']
+															, 'data-id-kategori' => $kategori['id_antrian_kategori']
+															, 'data-url' => base_url() . '/antrian-panggil/ajax-cetak-antrian-c'
+														],
+												'url' => 'javascript:void(0)',
+												'label' => 'Cetak'
+											])
 						. '</td>
-					</tr>';
+						</tr>';
+					}
+					
 					$no++;
 			}
 			?>

@@ -35,6 +35,7 @@ input[type=number] {
 		}
 		helper('html');
 		$idskategori=[];
+		$awalans = [];
 		foreach ($data_list as $val){
 			$kategori = $val['kategori'];
 			$antrian = $val['antrian'];
@@ -42,6 +43,7 @@ input[type=number] {
 			$jml_antrian = key_exists($kategori['id_antrian_kategori'], $antrian_urut) ? $antrian_urut[$kategori['id_antrian_kategori']]['jml_antrian'] : 0;
 			$dipanggil = key_exists($kategori['id_antrian_kategori'], $antrian_urut) ? $antrian_urut[$kategori['id_antrian_kategori']]['jml_dipanggil'] : 0;
 			$sisa = $jml_antrian - $dipanggil;
+			$awalans[] = $kategori['awalan'];
 		?>
 			<tr>
 				<td><?=$kategori['nama_antrian_kategori']?></td>
@@ -64,6 +66,7 @@ input[type=number] {
 				<th>Panggil Ulang</th>
 				<th>Lewati</th>
 				<th>Spesial Panggil</th>
+				<th <?= (in_array('C',$awalans))?'style="display:none;"':""?>>Cetak Antrian Bilik</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -129,14 +132,27 @@ input[type=number] {
 						<td><input class="form-control" type="number" id="spesial-call-'.$val['id_antrian_detail'].'"style="width: 50px;float: left;margin-right: 10px;height: 30px;" />' . btn_label([
 												'attr' => ['class' => 'btn btn-primary btn-xs spesial-panggil'
 															, 'data-id-antrian-detail' => $val['id_antrian_detail']
+															, 'id'=>'lewati-antrian-'.$val['id_antrian_detail']
 															, 'id' => 'spesial-antrian-'.$val['id_antrian_detail']
 															, 'data-url' => base_url() . '/antrian-panggil/ajax-spesial-panggil-antrian'
 														],
 												'url' => 'javascript:void(0)',
 												'label' => 'Panggil'
 											])
+						. '</td>';
+					if ($kategori['awalan']=='A'||$kategori['awalan']=='B') {
+						echo '<td><input class="form-control cetak-antrian-lab" type="text" id="cetak-antrian-'.$val['id_antrian_detail'].'"style="width: 70px;float: left;margin-right: 10px;height: 30px;font-size: 12px" placeholder="No. Lab"/>' . btn_label([
+												'attr' => ['class' => 'btn btn-primary btn-xs cetak-antrian-c '
+															, 'data-id-antrian-detail' => $val['id_antrian_detail']
+															, 'data-id-kategori' => $kategori['id_antrian_kategori']
+															, 'data-url' => base_url() . '/antrian-panggil/ajax-cetak-antrian-c'
+														],
+												'url' => 'javascript:void(0)',
+												'label' => 'Cetak'
+											])
 						. '</td>
-					</tr>';
+						</tr>';
+					}
 					$no++;
 			}
 			?>

@@ -30,7 +30,8 @@ $(document).ready(function() {
 							$td = $('#antrian-detail-' + v['id_antrian_detail']).find('td');
 							$td.eq(2).html(v['nomor_panggil']);
 							jml = parseInt($td.eq(3).text());
-							$td.eq(3).html(jml + 1);
+							$td.eq(3).html(jml);
+							$('#lewati-antrian-'+ v['id_antrian_detail']).removeClass('disabled');
 						}
 											
 						$('#total-antrian').html(v['jml_antrian']);

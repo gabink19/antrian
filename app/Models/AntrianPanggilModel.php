@@ -326,5 +326,32 @@ class AntrianPanggilModel extends \App\Models\BaseModel
 		}
 		return true;
 	}
+	public function saveCetakAntrianLab($id,$no_lab,$nomor_antrian)
+	{					
+		$sql = 'SELECT nama_antrian_tujuan FROM antrian_detail
+				LEFT JOIN antrian_tujuan USING (id_antrian_tujuan)
+				WHERE id_antrian_detail = ?';
+		
+		$data_db = $this->db->query($sql, $id)->getRowArray();
+
+		$data_db['id_antrian_detail'] = $id;
+		$data_db['no_lab'] = $no_lab;
+		$data_db['nomor_antrian'] = $nomor_antrian;
+		$save = $this->db->table('antrian_lab')->insert($data_db);
+		if ($save) {
+			return $data_db;
+		}
+		return false;
+	}
+	function getIDKategoriC(){
+		$sql = 'SELECT id_antrian_kategori FROM antrian_kategori
+				WHERE awalan = "C"';
+		
+		$data_db = $this->db->query($sql)->getRowArray();
+		if ($data_db!='') {
+			return $data_db['id_antrian_kategori'];
+		}
+		return false;
+	}
 }
 ?>

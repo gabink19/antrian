@@ -230,6 +230,60 @@ $(document).ready(function(){
 			}				
 		})
 	});
+	$('.cetak-antrian-c').click(function(){
+		$this = $(this);
+		
+		id_antrian_detail = $this.attr('data-id-antrian-detail')
+		nomor_lab = $('#cetak-antrian-'+id_antrian_detail).val()
+		nomor_terakhir = $('#no_terakhir_'+id_antrian_detail).text()
+		console.log('#no_terakhir_'+id_antrian_detail)
+		if (nomor_terakhir=='0'||nomor_lab=='') {
+			Swal.fire({
+				title: 'Error !!!',
+				text: "Belum ada antrian terpanggil.",
+				type: 'error',
+				showCloseButton: true,
+				confirmButtonText: 'OK'
+			})
+			return false
+		}
+
+		if ($this.hasClass('disable')) {
+			return false;
+		}
+		
+		$loader = $('<i class="fas fa-circle-notch fa-spin me-2 mt-1" style="float:left"></i>');
+		$loader.prependTo($this);
+		$this.attr('disabled', 'disabled');
+		$this.addClass('disabled');
+		$this.prop('disabled', true);
+		$.ajax({
+			url : base_url + '/antrian-panggil/ajax-cetak-antrian-c',
+			type : 'post',
+			data : 'id=' + id_antrian_detail + '&no_lab=' + nomor_lab,
+			success : function(data) {
+				data = $.parseJSON(data);
+				$this.prop('disabled', false);
+				$loader.remove();
+				$this.removeAttr('disabled');
+				$this.removeClass('disabled');
+				socket.send('ambilantrian');
+			}, error: function(xhr) {
+				console.log(xhr);
+				$this.removeAttr('disabled');
+				$loader.remove();
+				$this.removeClass('disabled');
+				$this.prop('disabled', false);
+				Swal.fire({
+					title: 'Error !!!',
+					text: xhr.responseText,
+					type: 'error',
+					showCloseButton: true,
+					confirmButtonText: 'OK'
+				})
+			}				
+		})
+	});
 	socket.onclose = function() {
 	  console.log('Koneksi ditutup.');
 	};

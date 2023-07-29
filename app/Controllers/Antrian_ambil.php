@@ -172,6 +172,9 @@ class Antrian_ambil extends \App\Controllers\BaseController
 			$printer_aktif = $this->model->getAktifPrinter();
 			if ($printer_aktif) {
 				foreach ($printer_aktif as $val) {
+					if ($val['nama_setting_printer'] != "Printer Pengunjung") {
+						continue;
+					}
 					if ($print_method=="network") {
 						$connector = new NetworkPrintConnector($val['alamat_server'], 9100, 5);
 					} else if ($print_method=="windows"){

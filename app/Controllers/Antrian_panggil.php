@@ -8,6 +8,10 @@
 
 namespace App\Controllers;
 use App\Models\AntrianPanggilModel;
+use App\Models\AntrianAmbilModel;
+use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
+use Mike42\Escpos\PrintConnectors\NetworkPrintConnector;
+use Mike42\Escpos\Printer;
 
 require APPPATH . 'ThirdParty/Escpos/vendor/autoload.php';
 
@@ -18,6 +22,7 @@ class Antrian_panggil extends \App\Controllers\BaseController
 		parent::__construct();
 		
 		$this->model = new AntrianPanggilModel;	
+		$this->modelAmbilAntrian = new AntrianAmbilModel;	
 		$this->data['site_title'] = 'Panggil Antrian';
 
 		$this->addJs ( $this->config->baseURL . 'public/themes/modern/js/antrian-panggil.js');
@@ -56,8 +61,12 @@ class Antrian_panggil extends \App\Controllers\BaseController
 				$antrian_urut[$val['id_antrian_kategori']] = $val;
 			}
 			
-			
 			$this->data['antrian_urut'] = $antrian_urut;
+			if (!isset($this->data['data_list'])) {
+				$this->data['msg'] = 'PC ini (ip: '.$_SERVER['REMOTE_ADDR'].') belum didaftarkan di referensi tujuan untuk user loket/bilik. Hanya user dengan role admin yg bisa digunakan di pc ini.';
+				$this->view('error.php', $this->data);
+				die;
+			}
 			$this->view('antrian-panggil-detail-special.php', $this->data);
 			die;
 		}
@@ -313,6 +322,45 @@ class Antrian_panggil extends \App\Controllers\BaseController
 		exit;
 	}
 
+	public function ajax_cetak_antrian_c() 
+	{
+		if (empty($_POST['id']) || empty($_POST['no_lab'])) {
+			$message['status'] = 'error';
+			$message['message'] = 'Invalid input';
+			echo json_encode($message);
+			exit;
+		}
+		
+		$id = $_POST['id'];
+		$no_lab = $_POST['no_lab'];
+		$kategori = $this->model->getIDKategoriC();
+		if (!$kategori) {
+			$message['status'] = 'error';
+			$message['data'] = 'Kategori Bilik dengan awalan C tidak ditemukan.';
+			echo json_encode($message);
+			exit;
+		}
+		$antrian = $this->modelAmbilAntrian->ambilAntrian($kategori);
+		if (!$antrian){
+			$message['status'] = 'error';
+			$message['message'] = 'Error Cetak antrian C';
+		}else{
+			$nomor_antrian = $antrian['jml_antrian'];
+			$saveAntrian = $this->model->saveCetakAntrianLab($id,$no_lab,$nomor_antrian);
+			$antrian['nama_antrian_tujuan'] = $saveAntrian['nama_antrian_tujuan'];
+			if ($antrian) {
+				$this->cetakAntrian($antrian);
+				$message['status'] = 'ok';
+				$message['data'] = $antrian;
+			} else {
+				$message['status'] = 'error_printer';
+				$message['data'] = 'Error Cetak antrian C';
+			}
+		}
+		echo json_encode($message);
+		exit;
+	}
+
 	private function findRole($data, $roleName) {
 		foreach ($data['role'] as $role) {
 			if ($role['nama_role'] === $roleName) {
@@ -320,5 +368,47 @@ class Antrian_panggil extends \App\Controllers\BaseController
 			}
 		}
 		return null;
+	}
+
+	private function cetakAntrian($antrian,$print_method="network") {
+		try {
+			$identitas = $this->modelAmbilAntrian->getIdentitas();
+			$printer_aktif = $this->modelAmbilAntrian->getAktifPrinter();
+			if ($printer_aktif) {
+				foreach ($printer_aktif as $val) {
+					if ($val['nama_setting_printer'] != $antrian['nama_antrian_tujuan']) {
+						continue;
+					}
+					if ($print_method=="network") {
+						$connector = new NetworkPrintConnector($val['alamat_server'], 9100, 5);
+					} else if ($print_method=="windows"){
+						$connector = new WindowsPrintConnector($val['alamat_server']);
+					}
+					$printer = new Printer($connector);
+					
+					$printer -> setJustification(Printer::JUSTIFY_CENTER);
+					$printer->setFont(Printer::FONT_A);
+					$printer->setTextSize(1,1);
+					$printer -> text(strtoupper($identitas['nama']) . "\n");
+					$printer -> text("NOMOR ANTRIAN\n");
+					$printer -> text("=========================");
+					$printer -> text("\n");
+					$printer->setTextSize(7,7);
+					$printer -> text($antrian['awalan'] . $antrian['jml_antrian']);
+					$printer->setTextSize(1,1);
+					$printer -> text("\n=========================\n");
+					$printer -> text($antrian['nama_antrian_kategori'] . "\n");
+					$printer -> text(format_tanggal(date('Y-m-d')) . "\n");
+					$printer -> text(date('H:i:s'));
+					$printer -> feed(2);
+					$printer -> cut();
+					
+					/* Close printer */
+					$printer -> close();
+				}
+			}
+		} catch (Exception $e) {
+			echo "Couldn't print to this printer: " . $e -> getMessage() . "\n";
+		}
 	}
 }

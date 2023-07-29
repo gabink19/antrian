@@ -116,7 +116,9 @@ class LongPollingModel extends \App\Models\BaseModel
 		return $result;
 	}
 	public function getAntrianAmbilSpc($id) {
-		
+		if ($id=='') {
+			return [];
+		}
 		$tanggal = date('Y-m-d');
 		$sql = 'SELECT antrian_detail.*,  antrian_panggil.*
 				FROM antrian_panggil 
