@@ -22,10 +22,10 @@ class App extends BaseConfig
 	*/
 	
 	// public $baseURL = 'https://jagowebdev.com/demo/admin-template-ci4/';
-	public $baseURL = 'http://192.168.1.18/antrian-dede/';
+	public $baseURL = 'http://192.168.1.4/antrian-dede/';
 	public $imagesPath = ROOTPATH . 'public/images/';
 	// public $imagesURL = 'https://jagowebdev.com/demo/admin-template-ci4/public/images/';
-	public $imagesURL = 'http://192.168.1.18/antrian-dede/public/images/';
+	public $imagesURL = 'http://192.168.1.4/antrian-dede/public/images/';
 	
 	public $checkRoleAction = ['enable_global' => true, 'field' =>'id_user_input'];
 	

@@ -407,6 +407,9 @@ class Antrian_panggil extends \App\Controllers\BaseController
 					$printer -> text("\n");
 					$printer->setTextSize(7,7);
 					$printer -> text($antrian['awalan'] . $antrian['jml_antrian']);
+					$printer -> text("\n");
+					$printer->setTextSize(1,1);
+					$printer -> barcode($antrian['awalan'] . $antrian['jml_antrian']);
 					$printer->setTextSize(1,1);
 					$printer -> text("\n=========================\n");
 					$printer -> text($antrian['nama_antrian_kategori'] . "\n");
