@@ -6,7 +6,7 @@ let audio_object = [];
 let current_added = [];
 const data_layar_antrian = [];
  $(document).ready(function() {
-	var socket = new WebSocket('ws://localhost:8080');
+	var socket = new WebSocket('ws://5.181.216.149:8080');
 
 	socket.onopen = function() {
 	  console.log('Koneksi berhasil dibuat.');
