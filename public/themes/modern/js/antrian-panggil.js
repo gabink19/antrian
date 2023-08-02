@@ -1,6 +1,6 @@
 $(document).ready(function(){
 	var suara = '';
-	var socket = new WebSocket('ws://5.181.216.149:8080');
+	var socket = new WebSocket('wss://5.181.216.149:8080');
 	
 	socket.onopen = function() {
 		console.log('Koneksi berhasil dibuat.');

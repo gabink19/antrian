@@ -352,7 +352,7 @@ class LongPolling extends \App\Controllers\BaseController
 
 	private function webSocket($messageToSend)
 	{
-		$client = new \WebSocket\Client("ws://localhost:8080");
+		$client = new \WebSocket\Client("wss://5.181.216.149:8080");
 		$client->text($messageToSend);
 		
 		$client->close();
