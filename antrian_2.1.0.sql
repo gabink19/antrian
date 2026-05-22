@@ -202,7 +202,7 @@ CREATE TABLE `antrian_panggil_detail` (
   `id_antrian_detail` int(11) unsigned NOT NULL,
   `awalan_panggil` char(1) NOT NULL,
   `nomor_panggil` smallint(5) unsigned NOT NULL,
-  `waktu_panggil` time DEFAULT current_timestamp(),
+  `waktu_panggil` time DEFAULT NULL,
   `lewati` datetime DEFAULT NULL,
   `spesial_panggil` int(11) DEFAULT 0,
   PRIMARY KEY (`id_antrian_panggil_detail`)
@@ -389,8 +389,8 @@ DROP TABLE IF EXISTS `antrian_panggil_ulang`;
 CREATE TABLE `antrian_panggil_ulang` (
   `id_setting_layar` int(11) unsigned DEFAULT NULL,
   `id_antrian_panggil_detail` int(11) unsigned DEFAULT NULL,
-  `tanggal_panggil_ulang` date DEFAULT curdate(),
-  `waktu_panggil_ulang` time DEFAULT curtime()
+  `tanggal_panggil_ulang` date DEFAULT NULL,
+  `waktu_panggil_ulang` time DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 /*Data for the table `antrian_panggil_ulang` */
@@ -1459,7 +1459,7 @@ CREATE TABLE `user` (
   `password` varchar(255) NOT NULL,
   `verified` tinyint(4) NOT NULL,
   `status` tinyint(1) unsigned NOT NULL DEFAULT 1,
-  `created` datetime NOT NULL DEFAULT curdate(),
+  `created` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `avatar` varchar(255) NOT NULL,
   PRIMARY KEY (`id_user`)
 ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=latin1 ROW_FORMAT=COMPACT COMMENT='Tabel user untuk login';
@@ -1467,7 +1467,7 @@ CREATE TABLE `user` (
 /*Data for the table `user` */
 
 insert  into `user`(`id_user`,`email`,`username`,`nama`,`password`,`verified`,`status`,`created`,`avatar`) values 
-(1,'prawoto.hadi@gmail.com','admin','Agus Prawoto Hadi','$2y$10$luCbrAdrDWgxckIYfjQymeeN.6WuV656.MNUth8AxF94H8Mb.enmK',1,0,'2018-09-20 16:04:35','Agus Prawoto Hadi.png'),
+(1,'prawoto.hadi@gmail.com','admin','Agus Prawoto Hadi','$2y$10$OI7Q09AJHvuAxqzH4b4rj.5AwKHFal6ama5k4hVsYWBZfynK5cZHS',1,0,'2018-09-20 16:04:35','Agus Prawoto Hadi.png'),
 (3,'user.administrasi@gmail.com','user','User Administrasi','$2y$10$n2hGjOQUW2EYRskCF2rgaOJR5w0dR3h8hqWln/5OXkAW2XT6vpujO',1,1,'2020-04-05 10:12:22','Ahmad Basuki.png'),
 (5,'guest@gmail.com','guest','Guest','$2y$10$FjaeXtJ7f/vrOfCJuUW2GebEVuTgOEhlVpQ3jtY4BDGlfUaWsPz4G',1,1,'2022-02-14 00:00:00',''),
 (7,'gibran@gmail.com','gibran','Loket 1','$2y$10$OI7Q09AJHvuAxqzH4b4rj.5AwKHFal6ama5k4hVsYWBZfynK5cZHS',1,1,'2023-07-16 00:00:00','');

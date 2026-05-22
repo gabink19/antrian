@@ -18,6 +18,8 @@ use MySQLi;
 use mysqli_sql_exception;
 use stdClass;
 use Throwable;
+use const MYSQLI_STORE_RESULT;
+use const MYSQLI_USE_RESULT;
 
 /**
  * Connection for MySQLi
